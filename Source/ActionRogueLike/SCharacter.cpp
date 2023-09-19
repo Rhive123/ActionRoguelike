@@ -41,34 +41,12 @@ ASCharacter::ASCharacter()
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
-	// -- Rotation Visualization -- //
-	const float DrawScale = 100.0f;
-	const float Thickness = 5.0f;
-
-	FVector LineStart = GetActorLocation();
-	// Offset to the right of pawn
-	LineStart += GetActorRightVector() * 100.0f;
-	// Set line end in direction of the actor's forward
-	FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
-	// Draw Actor's Direction
-	DrawDebugDirectionalArrow(GetWorld(), LineStart, ActorDirection_LineEnd, DrawScale, FColor::Yellow, false, 0.0f, 0, Thickness);
-
-	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
-	// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
-	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
-
-		
-	
-	
 }
 
 // Called to bind functionality to input
@@ -100,14 +78,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
-		
 		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ASCharacter::Move);
-
 		EnhancedInputComponent->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &ASCharacter::LookMouse);
 		EnhancedInputComponent->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
-
 	}
-	
 
 }
 #pragma region Enhanced Input Functions
@@ -126,13 +100,11 @@ void ASCharacter::Move(const FInputActionValue& Value)
 	// Move Right/Left strafe
 	const FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 	AddMovementInput(RightVector, AxisValue.X);
-	
 }
 
 void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 {
 	const FVector2D Value = InputValue.Get<FVector2D>();
-	
 	AddControllerYawInput(Value.X);
 	AddControllerPitchInput(Value.Y);
 }
