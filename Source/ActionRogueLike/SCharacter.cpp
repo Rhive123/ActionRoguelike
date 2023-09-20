@@ -7,10 +7,8 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/Controller.h>
 #include "Components/InputComponent.h"
-
 // Debug Helper
 #include "DrawDebugHelpers.h"
-
 // Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -35,6 +33,8 @@ ASCharacter::ASCharacter()
 
 	bUseControllerRotationYaw = false;
 	
+	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
+	
 }
 
 // Called when the game starts or when spawned
@@ -54,33 +54,25 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 		
-	
+	// Get the Player Controller
 	const APlayerController* PlayerController = GetController<APlayerController>();
 	if(PlayerController) 
 	{
+		// Get the Local Player Subsystem and assign the DefaultInputMapping to it
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) 
 		{
 			Subsystem->ClearAllMappings();
 			Subsystem->AddMappingContext(DefaultInputMapping,0);
 		}
-
-		// same as above
-		/*const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-		if (LocalPlayer)
-		{
-			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-			{
-				Subsystem->AddMappingContext(DefaultInputMapping, 0);
-			}
-		}*/
 	}
-	// Enhanced Input System
+	// Bind the Actions to Functions
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ASCharacter::Move);
 		EnhancedInputComponent->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &ASCharacter::LookMouse);
 		EnhancedInputComponent->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
+		EnhancedInputComponent->BindAction(Input_PrimaryInteract, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryInteract);
 	}
 
 }
@@ -118,5 +110,12 @@ void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
+
+void ASCharacter::PrimaryInteract()
+{
+	// Log interact
+	UE_LOG(LogTemp, Warning, TEXT("Interact"));
+	InteractionComp->PrimaryInteract();
+}
 
 #pragma endregion

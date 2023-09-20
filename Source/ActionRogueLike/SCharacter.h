@@ -7,6 +7,7 @@
 
 // Enhanced Input
 #include "InputActionValue.h"
+#include "SinteractionComponent.h"
 
 #include "SCharacter.generated.h"
 
@@ -32,6 +33,10 @@ protected:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
+	// SInteractionComponent
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USInteractionComponent* InteractionComp;
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,6 +44,8 @@ protected:
 	// Define a subclass for the editor to provide a list of possible projectiles (either an Aactor or a subclass)
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TSubclassOf<AActor> ProjectileClass;
+
+	
 
 public:	
 	// Called every frame
@@ -56,6 +63,9 @@ public:
 	// Function to handle primary attack based on input value
 	void PrimaryAttack(const FInputActionValue& Value);
 
+	// Function to handle primary interact
+	void PrimaryInteract();
+
 	// Input_Jump action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* Input_Jump;
@@ -68,6 +78,9 @@ public:
 	// Input_PrimaryAttack action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* Input_PrimaryAttack;
+	// input_PrimaryInteract action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* Input_PrimaryInteract;
 
 	// Input Mapping Context
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
