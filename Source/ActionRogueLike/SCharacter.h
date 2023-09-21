@@ -16,7 +16,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
 class UInputMappingContext;
-
+class UAnimMontage;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -41,10 +41,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Define a subclass for the editor to provide a list of possible projectiles (either an Aactor or a subclass)
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	// Define a subclass for the editor to provide a list of possible projectiles (either an AActor or a subclass)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 	
 
 public:	
@@ -63,6 +67,7 @@ public:
 	// Function to handle primary attack based on input value
 	void PrimaryAttack(const FInputActionValue& Value);
 
+	void PrimaryAttack_TimeElapsed();
 	// Function to handle primary interact
 	void PrimaryInteract();
 
