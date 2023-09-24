@@ -2,7 +2,7 @@
 
 
 #include "SExplosiveBarrel.h"
-
+#include "DrawDebugHelpers.h"
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
@@ -12,6 +12,7 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	MeshComp->SetSimulatePhysics(true);
 	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
 	MeshComp->SetCollisionProfileName("PhysicsActor");
+	// Bind the OnHit event
 	MeshComp->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnHit);
 	RootComponent = MeshComp;
 	// setup radial force
@@ -19,9 +20,12 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	// attach to root component
 	RadialForceComp->SetupAttachment(RootComponent);	
 	RadialForceComp->Radius = 250.0f;
-	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->bAutoActivate = false; // prevent component from ticking, and only use FireImpulse() instead
 	RadialForceComp->ImpulseStrength = 2000.0f;
+	// Optional, default constructor of component already adds 4 object types to affect, excluding WorldDynamic
+	RadialForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
+	// Optional, ignores 'Mass' of other objects (if false, the impulse strength will be much higher to push most objects depending on Mass)
+	RadialForceComp->bImpulseVelChange = true;
 	
 }
 
@@ -39,11 +43,20 @@ void ASExplosiveBarrel::Tick(float DeltaTime)
 
 }
 
+
+
 void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Log the hit
 	UE_LOG(LogTemp, Log, TEXT("OnHit"));
+	// Log the name of the actor and time that hit the barrel
+	UE_LOG(LogTemp, Log, TEXT("OtherActor: %s, at game time: %f"), *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
 	RadialForceComp->FireImpulse();
-	
+
+	FString CombinedString = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
+	DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
+
+	// Detailed info on logging in UE
+    // https://nerivec.github.io/old-ue4-wiki/pages/logs-printing-messages-to-yourself-during-runtime.html
 }
 

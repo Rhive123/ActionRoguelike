@@ -46,9 +46,19 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> DashProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	float DashTeleportDelay;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
+	
 	
 
 public:	
@@ -67,10 +77,25 @@ public:
 	// Function to handle primary attack based on input value
 	void PrimaryAttack(const FInputActionValue& Value);
 
+	// Function to handle black hole attack
+	void BlackHoleAttack();
+
+	// Primary attack time elapsed
 	void PrimaryAttack_TimeElapsed();
+
+	// Black Hole attack time elapsed
+	void BlackHoleAttack_TimeElapsed();
+
+	// Function to handle dash
+	void Dash();
+	// Dash time elapsed
+	void Dash_TimeElapsed();
+
+	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
 	// Function to handle primary interact
 	void PrimaryInteract();
 
+	#pragma region Enhanced Input 
 	// Input_Jump action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* Input_Jump;
@@ -83,6 +108,12 @@ public:
 	// Input_PrimaryAttack action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* Input_PrimaryAttack;
+	// Input_BlackHoleAttack action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* Input_BlackHoleAttack;
+	// Input_Dash action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* Input_Dash;
 	// input_PrimaryInteract action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* Input_PrimaryInteract;
@@ -91,7 +122,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* DefaultInputMapping;
 
-
+	
+	#pragma endregion
 
 	
 	
