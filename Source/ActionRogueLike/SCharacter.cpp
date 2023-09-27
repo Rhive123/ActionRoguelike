@@ -7,6 +7,7 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/Controller.h>
 #include "Components/InputComponent.h"
+#include "SAttributeComponent.h"
 // Debug Helper
 #include "DrawDebugHelpers.h"
 // Enhanced Input
@@ -34,7 +35,7 @@ ASCharacter::ASCharacter()
 	bUseControllerRotationYaw = false;
 	
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
-	
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 }
 
 // Called when the game starts or when spawned
@@ -115,7 +116,10 @@ void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
-	PlayAnimMontage(AttackAnim);
+	if (ensureAlways(AttackAnim))
+	{
+		PlayAnimMontage(AttackAnim);
+	}
 
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 	
@@ -123,7 +127,11 @@ void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 
 void ASCharacter::BlackHoleAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	if(ensureAlways(BlackHoleAnim))
+	{
+		PlayAnimMontage(BlackHoleAnim);
+	}
+	
 
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, 0.2f);
 
@@ -216,6 +224,22 @@ void ASCharacter::PrimaryInteract()
 	// Log interact
 	UE_LOG(LogTemp, Warning, TEXT("Interact"));
 	InteractionComp->PrimaryInteract();
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 #pragma endregion

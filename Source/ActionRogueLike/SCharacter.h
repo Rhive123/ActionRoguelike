@@ -14,9 +14,11 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class USAttributeComponent;
 class UInputAction;
 class UInputMappingContext;
 class UAnimMontage;
+
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -36,6 +38,9 @@ protected:
 	// SInteractionComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USInteractionComponent* InteractionComp;
+	// SAttributeComponent
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
 
 
 	// Called when the game starts or when spawned
@@ -56,6 +61,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* BlackHoleAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 	
@@ -95,6 +103,10 @@ public:
 	// Function to handle primary interact
 	void PrimaryInteract();
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	virtual void PostInitializeComponents() override;
 	#pragma region Enhanced Input 
 	// Input_Jump action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
